@@ -26,6 +26,18 @@ class StillRating(Enum):
     FIVE = 5
     FIVE_PLUS = 6
 
+# To Comma Seperated List
+def to_csl(input: Optional[str]):
+    if input is None:
+        return input
+    return input.split(",")
+
+# From Comma Seperated List
+def from_csl(input: Optional):
+    if input is None:
+        return input
+    return ",".join(input)
+
 class App:
     keywords: List[str] = []
     mimetypes: List[str] = []

@@ -7,6 +7,10 @@ from urllib.parse import urlparse, urlunparse
 
 PATH = os.path.join(os.path.dirname(__file__), 'sadb.db')
 
+# Shortened alias functions
+tcsl = sadb.to_csl
+fcsl = sadb.from_csl
+
 # Read-only version of the database
 class ReadableDB:
     def __init__(self):
@@ -25,6 +29,15 @@ class ReadableDB:
         self.c.execute("SELECT * FROM apps WHERE id=?", (app_id))
         app = self.c.fetchone()
         return sadb.App(*app)
+    
+    @staticmethod
+    def column_to_app(column: tuple):
+        # make sure the column length is equal ot what it should be
+        assert len(column) == 23
+        return App(
+            column[0],
+            
+        )
 
     def get_all_apps(self) -> list:
         self.c.execute("SELECT * FROM apps")
@@ -35,16 +48,6 @@ class WritableDB(ReadableDB):
     def __init__(self):
         self.conn = sqlite3.connect(PATH)
         self.c = self.conn.cursor()
-
-    def add_app(self, app: sadb.App) -> None:
-        self.c.execute("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
-            (app.id, app.name, app.primary_src, app.src_pkg_name, app.icon_url, 
-            app.author, app.summary, app.description, app.categories, app.keywords, 
-            app.mimetypes, app.app_license, app.pricing.name, app.mobile.name, 
-            app.still_rating.name, app.still_rating_notes, app.homepage, app.donate_url, 
-            app.screenshot_urls, app.demo_url, app.addons))
-        self.conn.commit()
-
 
     def create_db(self):
         self.c.execute('''CREATE TABLE IF NOT EXISTS apps
@@ -59,23 +62,25 @@ class WritableDB(ReadableDB):
         self.c.execute("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", 
             (
                 app.id, app.name, app.primary_src, app.src_pkg_name, app.icon_url, 
-                app.author, app.summary, app.description, app.categories, app.keywords, 
-                app.mimetypes, app.app_license, app.pricing.name, app.mobile.name, 
-                app.still_rating.name, app.still_rating_notes, app.homepage, app.donate_url, 
-                app.screenshot_urls, app.demo_url, app.addons
+                app.author, app.summary, app.description, tcsl(app.categories),
+                tcsl(app.keywords), tcsl(app.mimetypes), app.app_license, app.pricing.name,
+                app.mobile.name, app.still_rating.name, app.still_rating_notes, app.homepage,
+                app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons)
             )
         )
+        self.conn.commit()
 
 
     def add_apps_from_db(self, apps: List[sadb.App]) -> None:
         # Generated data
         apps_data = [
             (
-                app.id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
-                app.author, app.summary, app.description, app.categories, app.keywords,
-                app.mimetypes, app.app_license, app.pricing.name, app.mobile.name,
-                app.still_rating.name, app.still_rating_notes, app.homepage, app.donate_url,
-                app.screenshot_urls, app.demo_url, app.addons
+                app.id, app.name, app.primary_src, app.src_pkg_name, app.icon_url, 
+                app.author, app.summary, app.description, tcsl(app.categories),
+                tcsl(app.keywords), tcsl(app.mimetypes), app.app_license, app.pricing.name,
+                app.mobile.name, app.still_rating.name, app.still_rating_notes, app.homepage,
+                app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons)
             ) for app in apps
         ]
         self.c.executemany("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
+        self.conn.commit()
