@@ -1,11 +1,13 @@
 from enum import Enum
 from typing import List, Optional
 
+
 class MobileType(Enum):
     UNKNOWN = 0
     PC_ONLY = 1
     MOBILE_ONLY = 2
     HYBRID = 3
+
 
 class Pricing(Enum):
     UNKNOWN = 0
@@ -15,7 +17,8 @@ class Pricing(Enum):
     FREEMIUM = 4
     ONE_TIME = 5
     SUBSCRIPTION = 6
-    EXTERNAL_SUBCRIPTION = 7
+    EXTERNAL_SUBSCRIPTION = 7
+
 
 class StillRating(Enum):
     UNKNOWN = 0
@@ -26,17 +29,20 @@ class StillRating(Enum):
     FIVE = 5
     FIVE_PLUS = 6
 
+
 # To Comma Seperated List
-def to_csl(input: Optional[str]):
-    if input is None:
-        return input
-    return input.split(",")
+def to_csl(csl: Optional[str]):
+    if csl is None:
+        return csl
+    return csl.split(",")
+
 
 # From Comma Seperated List
-def from_csl(input: Optional):
-    if input is None:
-        return input
-    return ",".join(input)
+def from_csl(csl: Optional[List[str]]):
+    if csl is None:
+        return csl
+    return ",".join(csl)
+
 
 class App:
     keywords: List[str] = []
