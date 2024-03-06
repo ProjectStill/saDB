@@ -30,15 +30,15 @@ class StillRating(Enum):
     FIVE_PLUS = 6
 
 
-# To Comma Seperated List
-def to_csl(csl: Optional[str]):
+# From Comma Seperated List
+def from_csl(csl: Optional[str]):
     if csl is None:
         return csl
     return csl.split(",")
 
 
-# From Comma Seperated List
-def from_csl(csl: Optional[List[str]]):
+# To Comma Seperated List
+def to_csl(csl: Optional[List[str]]):
     if csl is None:
         return csl
     return ",".join(csl)
@@ -55,15 +55,15 @@ class App:
     homepage: str = ""
     donate_url: str = ""
     screenshot_urls: List[str] = []
-    demo_urls: List[str] = []
+    demo_url: str = ""
     addons: List[str] = []
 
     def __init__(
         self, app_id: str, name: str, primary_src: str, src_pkg_name: str,
         icon_url: str, author: str, summary: str, description: str,
         categories: List[str], keywords: Optional[List[str]],
-        mimetypes: Optional[List[str]], app_license: Optional[str], pricing: Optional[str],
-        mobile: Optional[str], still_rating: Optional[str], still_rating_notes: Optional[str],
+        mimetypes: Optional[List[str]], app_license: Optional[str], pricing: Optional[Pricing],
+        mobile: Optional[MobileType], still_rating: Optional[StillRating], still_rating_notes: Optional[str],
         homepage: Optional[str], donate_url: Optional[str], screenshot_urls: Optional[List[str]],
         demo_url: Optional[str], addons: Optional[List[str]]
     ):
@@ -87,13 +87,13 @@ class App:
             self.app_license = app_license
 
         if pricing is not None:
-            self.pricing = Pricing[pricing]
+            self.pricing = pricing
         
         if mobile is not None:
-            self.mobile = MobileType[mobile]
+            self.mobile = mobile
         
         if still_rating is not None:
-            self.still_rating = StillRating[still_rating]
+            self.still_rating = still_rating
 
         if still_rating_notes is not None:
             self.still_rating_notes = still_rating_notes
