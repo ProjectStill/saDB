@@ -66,7 +66,7 @@ class FlatpakType(SourceType):
             config["Flatpak Repo"]["GPGKey"] = self.gpg
         return config
 
-    def check_config(self, path: str) -> bool:
+    def check_config(self, path: str) -> (bool, str):
         config = configparser.ConfigParser()
 
         try:
@@ -90,3 +90,23 @@ class FlatpakType(SourceType):
             if config["GPGKey"] != valid_config["GPGKey"]:
                 return False
         return True
+
+
+class SourceError(Exception):
+    """Raised when a source is not properly configured"""
+    def __init__(self, source: str, message: str):
+        self.source = source
+        self.message = message
+        super().__init__(f"Error with source {source}: {message}")
+
+
+sources = {
+    "flatpak": FlatpakType
+}
+
+
+def check_sources(src_yml: str) -> bool:
+    data = yaml.safe_load(src_yml)
+    for source in data:
+        if data[source]["type"] not in sources:
+            raise SourceError(source, f"Unknown source type: {data[source]['type']}")

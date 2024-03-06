@@ -10,6 +10,6 @@ flathub:
   alt_urls: # Can be used for mirrors
     - https://front-ams.flathub.org/
     - https://front-hex2.flathub.org/
-snap:
+snap:  # Snap supported coming soon
   source_type: snap
   title: Snap
