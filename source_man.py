@@ -1,3 +1,4 @@
+import io
 from abc import ABC, abstractmethod
 from typing import Optional, List
 import configparser
@@ -14,7 +15,7 @@ class SourceType(ABC):
         pass
 
     @abstractmethod
-    def generate_config(self):
+    def generate_config(self) -> str:
         pass
 
     def write_config(self, path: str):
@@ -48,7 +49,7 @@ class FlatpakType(SourceType):
         self.gpg = data.get("gpg", None)
         self.alt_urls = data.get("alt_urls", None)
 
-    def generate_config(self) -> configparser.ConfigParser:
+    def generate_config(self) -> str:
         config = configparser.ConfigParser()
         config["Flatpak Repo"] = {
             "Title": self.title,
@@ -64,7 +65,11 @@ class FlatpakType(SourceType):
             config["Flatpak Repo"]["Icon"] = self.icon_url
         if self.gpg is not None:
             config["Flatpak Repo"]["GPGKey"] = self.gpg
-        return config
+
+        # Configparser can't write to a string, so we have to use StringIO
+        with io.StringIO() as output:
+            config.write(output)
+            return output.getvalue()
 
     def check_config(self, path: str) -> (bool, str):
         config = configparser.ConfigParser()
@@ -72,10 +77,10 @@ class FlatpakType(SourceType):
         try:
             config.read(path)
         except configparser.ParsingError:
-            return False
+            return False, "Error parsing config file for $"  # The $ will be replaced with the source name
 
         if "Flatpak Repo" not in config.sections():
-            return False
+            return False, "No Flatpak Repo section in $"
 
         valid_config = self.generate_config()
 
@@ -85,11 +90,11 @@ class FlatpakType(SourceType):
 
         # Check important values for repo to at least work properly
         if config["Url"] != valid_config["Url"] and not config["Url"] in self.alt_urls:
-            return False
+            return False, "Repo URL does not match for $"
         if config.get("GPGKey", None) is not None:
             if config["GPGKey"] != valid_config["GPGKey"]:
-                return False
-        return True
+                return False, "GPG Key does not match for $"
+        return True, None
 
 
 class SourceError(Exception):
@@ -105,8 +110,19 @@ sources = {
 }
 
 
-def check_sources(src_yml: str) -> bool:
+def check_sources(src_yml: str) -> (bool, str, str):
     data = yaml.safe_load(src_yml)
-    for source in data:
-        if data[source]["type"] not in sources:
-            raise SourceError(source, f"Unknown source type: {data[source]['type']}")
+    for source_name in data:
+        if data[source_name]["type"] not in sources:
+            return False, source_name, f"Unknown source type: {data[source_name]['type']}"
+        try:
+            source_class = sources[data[source_name]["type"]](src_yml, source_name)
+            check_conf = source_class.check_config(f"sources/{source_name}.conf")
+            if not check_conf[0]:
+                return False, source_name, f"Error initializing source: \n{check_conf[1].replace('$', source_name)}"
+        except Exception as e:
+            return False, source_name, f"Error initializing source: \n{str(e)}"
+    return True, None, None
+
+
+def generate_sources()
