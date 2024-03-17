@@ -9,6 +9,7 @@ import yaml
 class SourceType(ABC):
     type: str
     title: str
+    config_folder: str
 
     @abstractmethod
     def __init__(self, yml: str, source_name: str):
@@ -18,10 +19,9 @@ class SourceType(ABC):
     def generate_config(self) -> str:
         pass
 
-    def write_config(self, path: str):
-        # write the config file to a real file
-        with open(path, "w") as file:
-            self.generate_config().write(file)
+    @abstractmethod
+    def write_config(self):
+        pass
 
     @abstractmethod
     def check_config(self, path: str) -> bool:
@@ -30,6 +30,7 @@ class SourceType(ABC):
 
 class FlatpakType(SourceType):
     type = "flatpak"
+    config_folder = "/etc/flatpak/remotes.d/"
     repo_url: str
     homepage: Optional[str] = None
     description: Optional[str] = None
@@ -70,6 +71,11 @@ class FlatpakType(SourceType):
         with io.StringIO() as output:
             config.write(output)
             return output.getvalue()
+
+    def write_config(self):
+        # write the config file to a real file
+        with open(f"/etc/flatpak/remotes.d/{self.title.lower().replace(" ", "_")}", "w") as file:
+            file.write(self.generate_config())
 
     def check_config(self, path: str) -> (bool, str):
         config = configparser.ConfigParser()
@@ -125,4 +131,12 @@ def check_sources(src_yml: str) -> (bool, str, str):
     return True, None, None
 
 
-def generate_sources()
+def generate_sources(src_yml: str): # Reads yaml file, finds source type, checks config, and writes config file
+    data = yaml.safe_load(src_yml)
+    for source_name in data:
+        source_class = sources[data[source_name]["type"]](src_yml, source_name)
+        check_conf = source_class.check_config(f"sources/{source_name}.conf")  # Will gen config if error
+        if not check_conf[0]:
+            source_class.write_config()
+
+    check_conf = check_sources(src_yml)
