@@ -116,18 +116,19 @@ sources = {
 }
 
 
-def check_sources(src_yml: str) -> (bool, str, str):
+def check_sources(src_yml: str) -> (bool, str, Optional[Exception]):
     data = yaml.safe_load(src_yml)
     for source_name in data:
         if data[source_name]["type"] not in sources:
-            return False, source_name, f"Unknown source type: {data[source_name]['type']}"
+            return False, SourceError(source_name, f"Unknown source type: {data[source_name]['type']}")
         try:
             source_class = sources[data[source_name]["type"]](src_yml, source_name)
             check_conf = source_class.check_config(f"sources/{source_name}.conf")
             if not check_conf[0]:
-                return False, source_name, f"Error initializing source: \n{check_conf[1].replace('$', source_name)}"
+                return False, SourceError(source_name, check_conf[1].replace('$', source_name))
+
         except Exception as e:
-            return False, source_name, f"Error initializing source: \n{str(e)}"
+            return False, e
     return True, None, None
 
 
@@ -140,3 +141,5 @@ def generate_sources(src_yml: str): # Reads yaml file, finds source type, checks
             source_class.write_config()
 
     check_conf = check_sources(src_yml)
+    if not check_conf[0]:
+        raise check_conf[1]
