@@ -74,8 +74,15 @@ class ReadableDB:
 
 class WritableDB(ReadableDB):
     def __init__(self, config: SadbConfig):
+        new_db = not os.path.exists(config.db_location)
+        # Create folders for database if they don't exist
+        if new_db and not os.path.exists(os.path.dirname(config.db_location)):
+            os.makedirs(os.path.dirname(config.db_location), exist_ok=True)
+
         self.conn = sqlite3.connect(config.db_location)
         self.c = self.conn.cursor()
+        if new_db:
+            self.create_db()
         super().__init__(config, init_db=False)
 
     def create_db(self):
@@ -111,3 +118,7 @@ class WritableDB(ReadableDB):
         ]
         self.c.executemany("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
         self.conn.commit()
+
+    def clear_db(self) -> None:
+        self.c.execute("DELETE FROM apps")
+        #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSECCESSFUL

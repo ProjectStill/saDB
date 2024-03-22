@@ -45,13 +45,9 @@ class TestDatabase(unittest.TestCase):
             "https://example.com/demo", ["addon1", "addon2"]
         )
 
-    def clear_db(self):
-        self.write_db.c.execute("DELETE FROM apps")
-        self.write_db.conn.commit()
-
     def test_clear_db(self):
         self.write_db.add_app(test_app)
-        self.clear_db()
+        self.write_db.clear_db()
         self.assertEqual(self.read_db.get_all_apps(), [])
 
     def test_create_db(self):

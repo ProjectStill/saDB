@@ -18,6 +18,7 @@ class SadbConfig:
     # Sets db_location to  string from home folder + .local/share/sadb/sadb.db
     db_location: os.fspath(os.path.join(os.path.expanduser('~'), ".local", "share", "sadb", "sadb.db"))
     repo_url: str
+    verbose: bool = False  # Not set in config file, but used in the program
 
     def __init__(self):  # Loads config file
         self.config.read(_CONFIG_PATH)
