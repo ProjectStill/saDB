@@ -2,6 +2,7 @@ from typing import List
 
 import sqlite3
 import sadb_classes as sadb
+from configuration import SadbConfig
 import os.path
 from urllib.parse import urlparse, urlunparse
 
@@ -31,12 +32,12 @@ def is_valid_sqlite_db() -> bool:
 
 # Read-only version of the database
 class ReadableDB:
-    def __init__(self, init_db: bool = True):
+    def __init__(self, config: SadbConfig, init_db: bool = True):
         if init_db:  # used to prevent init of the connection for writable db
             # Use uri workaround to open in read-only mode
-            file_uri = urlunparse(urlparse(os.path.abspath(PATH))._replace(scheme='file')) + "?mode=ro"
+            file_uri = urlunparse(urlparse(os.path.abspath(config.db_location))._replace(scheme='file')) + "?mode=ro"
             self.conn = sqlite3.connect(file_uri, uri=True)
-        self.c = self.conn.cursor()
+            self.c = self.conn.cursor()
 
     def __enter__(self):
         return self
@@ -72,9 +73,10 @@ class ReadableDB:
 
 
 class WritableDB(ReadableDB):
-    def __init__(self):
-        self.conn = sqlite3.connect(PATH)
-        super().__init__(init_db=False)
+    def __init__(self, config: SadbConfig):
+        self.conn = sqlite3.connect(config.db_location)
+        self.c = self.conn.cursor()
+        super().__init__(config, init_db=False)
 
     def create_db(self):
         self.c.execute('''CREATE TABLE IF NOT EXISTS apps

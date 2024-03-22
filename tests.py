@@ -7,8 +7,10 @@ import yaml
 import yaml_parse as yp
 import sadb_classes as sadb
 import database as db
+import configuration as cfg
 
-db.PATH = "test/test.db"  # change the path to prevent overwriting the real database
+config = cfg.SadbConfig()
+config.db_location = "test/test.db"  # change the path to prevent overwriting the real database
 test_app = sadb.App(
     "test-app", "Test App", "flathub", "test-app",
     "https://example.com/icon.png","John Doe", "A test app",
@@ -30,9 +32,9 @@ class TestSaDBClasses(unittest.TestCase):
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
-        self.write_db = db.WritableDB()
+        self.write_db = db.WritableDB(config)
         self.write_db.create_db()
-        self.read_db = db.ReadableDB()
+        self.read_db = db.ReadableDB(config)
         test_app = sadb.App(
             "test-app", "Test App", "flathub", "test-app",
             "https://example.com/icon.png","John Doe", "A test app",
