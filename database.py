@@ -12,17 +12,21 @@ tcsl = sadb.to_csl
 fcsl = sadb.from_csl
 
 
+# Checks if the database is the correct format
 def is_valid_sqlite_db() -> bool:
+    out = True
+    conn = None
     try:
         conn = sqlite3.connect(PATH)
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
-        return True
+        conn.close()
     except sqlite3.Error:
-        return False
+        out = False
     finally:
         if conn:
             conn.close()
+        return out
 
 
 # Read-only version of the database
@@ -44,7 +48,8 @@ class ReadableDB:
         self.c.execute("SELECT * FROM apps WHERE id=?", (app_id, ))
         app = self.c.fetchone()
         return sadb.App(*app)
-    
+
+    # Converts a sql query to an App class
     @staticmethod
     def column_to_app(column: tuple):
         # make sure the column length is equal to what it should be
