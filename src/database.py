@@ -2,10 +2,12 @@ from typing import List
 
 import sqlite3
 import sadb_classes as sadb
+import utilities
 from configuration import SadbConfig
 import os.path
 from urllib.parse import urlparse, urlunparse
 
+# Path to the SQLite database
 PATH = os.path.join(os.path.dirname(__file__), 'sadb.db')
 
 # Shortened alias functions
@@ -13,8 +15,14 @@ tcsl = sadb.to_csl
 fcsl = sadb.from_csl
 
 
-# Checks if the database is the correct format
+# Function to check if the database is in the correct format
 def is_valid_sqlite_db() -> bool:
+    """
+    Checks if the SQLite database at the specified path is valid.
+
+    Returns:
+        bool: True if the database is valid, False otherwise.
+    """
     out = True
     conn = None
     try:
@@ -32,7 +40,37 @@ def is_valid_sqlite_db() -> bool:
 
 # Read-only version of the database
 class ReadableDB:
+    """
+    A class used to represent a read-only SQLite database.
+
+    ...
+
+    Attributes
+    ----------
+    conn : sqlite3.Connection
+        a SQLite connection object
+    c : sqlite3.Cursor
+        a SQLite cursor object
+
+    Methods
+    -------
+    get_app(app_id: str) -> sadb.App:
+        Returns the app with the given id from the database.
+    column_to_app(column: tuple):
+        Converts a SQL query result to an App class instance.
+    get_all_apps() -> list:
+        Returns all apps from the database.
+    get_apps_from_query(query: str) -> list:
+        Executes the given SQL query and returns the result as a list of App class instances.
+    """
     def __init__(self, config: SadbConfig, init_db: bool = True):
+        """
+        Constructs a new ReadableDB instance.
+
+        Parameters:
+            config (SadbConfig): The configuration for the database.
+            init_db (bool): Whether to initialize the database connection. Default is True.
+        """
         if init_db:  # used to prevent init of the connection for writable db
             # Use uri workaround to open in read-only mode
             file_uri = urlunparse(urlparse(os.path.abspath(config.db_location))._replace(scheme='file')) + "?mode=ro"
@@ -46,14 +84,30 @@ class ReadableDB:
         self.conn.close()
 
     def get_app(self, app_id: str) -> sadb.App:
+        """
+        Returns the app with the given id from the database.
+
+        Parameters:
+            app_id (str): The id of the app.
+
+        Returns:
+            sadb.App: The app with the given id.
+        """
         self.c.execute("SELECT * FROM apps WHERE id=?", (app_id, ))
         app = self.c.fetchone()
         return sadb.App(*app)
 
-    # Converts a sql query to an App class
     @staticmethod
     def column_to_app(column: tuple):
-        # make sure the column length is equal to what it should be
+        """
+        Converts a SQL query result to an App class instance.
+
+        Parameters:
+            column (tuple): The SQL query result.
+
+        Returns:
+            sadb.App: The App class instance.
+        """
         assert len(column) == 21
         return sadb.App(
             column[0], column[1], column[2], column[3], column[4], column[5],
@@ -64,28 +118,79 @@ class ReadableDB:
         )
 
     def get_all_apps(self) -> list:
+        """
+        Returns all apps from the database.
+
+        Returns:
+            list: The list of all apps.
+        """
         self.c.execute("SELECT * FROM apps")
         return [self.column_to_app(app) for app in self.c.fetchall()]
 
     def get_apps_from_query(self, query: str) -> list:
+        """
+        Executes the given SQL query and returns the result as a list of App class instances.
+
+        Parameters:
+            query (str): The SQL query.
+
+        Returns:
+            list: The list of App class instances.
+        """
         self.c.execute(query)
         return [self.column_to_app(app) for app in self.c.fetchall()]
 
 
 class WritableDB(ReadableDB):
+    """
+    A class used to represent a writable SQLite database.
+
+    ...
+
+    Attributes
+    ----------
+    conn : sqlite3.Connection
+        a SQLite connection object
+    c : sqlite3.Cursor
+        a SQLite cursor object
+
+    Methods
+    -------
+    create_db():
+        Creates the database if it does not exist.
+    add_app(app: sadb.App) -> None:
+        Adds the given app to the database.
+    add_apps(apps: List[sadb.App]) -> None:
+        Adds the given list of apps to the database.
+    clear_db() -> None:
+        Deletes all apps from the database.
+    """
     def __init__(self, config: SadbConfig):
+        """
+        Constructs a new WritableDB instance.
+
+        Parameters:
+            config (SadbConfig): The configuration for the database.
+        """
         new_db = not os.path.exists(config.db_location)
         # Create folders for database if they don't exist
         if new_db and not os.path.exists(os.path.dirname(config.db_location)):
             os.makedirs(os.path.dirname(config.db_location), exist_ok=True)
+            if utilities.is_sudo_root():
+                utilities.fix_perms(os.path.dirname(config.db_location))
 
         self.conn = sqlite3.connect(config.db_location)
         self.c = self.conn.cursor()
         if new_db:
             self.create_db()
+            if utilities.is_sudo_root():
+                utilities.fix_perms(config.db_location)
         super().__init__(config, init_db=False)
 
     def create_db(self):
+        """
+        Creates the database if it does not exist.
+        """
         self.c.execute('''CREATE TABLE IF NOT EXISTS apps
             (id text, name text, primary_src text, src_pkg_name text, icon_url text, 
             author text, summary text, description text, categories text, keywords text, 
@@ -94,7 +199,13 @@ class WritableDB(ReadableDB):
             demo_url text, addons text)''')
 
     def add_app(self, app: sadb.App) -> None:
-        self.c.execute("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        """
+        Adds the given app to the database.
+
+        Parameters:
+            app (sadb.App): The app to add.
+        """
+        self.c.execute("INSERT OR REPLACE INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
                 app.author, app.summary, app.description, tcsl(app.categories),
@@ -106,7 +217,12 @@ class WritableDB(ReadableDB):
         self.conn.commit()
 
     def add_apps(self, apps: List[sadb.App]) -> None:
-        # Generated data
+        """
+        Adds the given list of apps to the database.
+
+        Parameters:
+            apps (list): The list of apps to add.
+        """
         apps_data = [
             (
                 app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
@@ -116,9 +232,12 @@ class WritableDB(ReadableDB):
                 app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons)
             ) for app in apps
         ]
-        self.c.executemany("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
+        self.c.executemany("INSERT OR REPLACE INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
         self.conn.commit()
 
     def clear_db(self) -> None:
+        """
+        Deletes all apps from the database.
+        """
         self.c.execute("DELETE FROM apps")
-        #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSECCESSFUL
+        #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSUCCESSFUL
