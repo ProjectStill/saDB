@@ -30,6 +30,14 @@ def is_valid_sqlite_db() -> bool:
         return out
 
 
+def remove_duplicate_apps(apps: List[sadb.App]) -> List[sadb.App]:
+    unique_apps = {}
+    for app in apps:
+        if app.src_pkg_name not in unique_apps:
+            unique_apps[app.src_pkg_name] = app
+    return list(unique_apps.values())
+
+
 # Read-only version of the database
 class ReadableDB:
     def __init__(self, config: SadbConfig, init_db: bool = True):
@@ -94,6 +102,10 @@ class WritableDB(ReadableDB):
             demo_url text, addons text)''')
 
     def add_app(self, app: sadb.App) -> None:
+        # Prevent apps with the same package name
+        self.c.execute("SELECT * FROM apps WHERE src_pkg_name=?", (app.src_pkg_name,))
+        if self.c.fetchone() is not None:
+            raise ValueError(f"An app with src_pkg_name {app.src_pkg_name} already exists.")
         self.c.execute("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             (
                 app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
@@ -107,6 +119,10 @@ class WritableDB(ReadableDB):
 
     def add_apps(self, apps: List[sadb.App]) -> None:
         # Generated data
+        # Removing duplicate package names
+        self.c.execute("SELECT src_pkg_name FROM apps")
+        existing_pkgs = [row[3] for row in self.c.fetchall()]
+        apps = remove_duplicate_apps(apps)
         apps_data = [
             (
                 app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
@@ -114,7 +130,7 @@ class WritableDB(ReadableDB):
                 tcsl(app.keywords), tcsl(app.mimetypes), app.app_license, app.pricing.value,
                 app.mobile.value, app.still_rating.value, app.still_rating_notes, app.homepage,
                 app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons)
-            ) for app in apps
+            ) for app in apps if app.src_pkg_name not in existing_pkgs
         ]
         self.c.executemany("INSERT INTO apps VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
         self.conn.commit()
