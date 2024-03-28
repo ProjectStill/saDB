@@ -2,15 +2,31 @@ import yaml
 from typing import List
 from sadb_classes import App
 
-
 def get_apps_from_yaml_path(path: str) -> List[App]:
+    """
+    Function to get apps from a YAML file.
+
+    Args:
+        path (str): The path of the YAML file.
+
+    Returns:
+        List[App]: A list of apps.
+    """
     with open(path, 'r') as file:
         return get_apps_from_yaml(file.read())
 
 
 def get_apps_from_yaml(yml: str) -> List[App]:
+    """
+    Function to get apps from a YAML string.
+
+    Args:
+        yml (str): The YAML string.
+
+    Returns:
+        List[App]: A list of apps.
+    """
     apps = yaml.safe_load(yml)
-    # create item for each key with the values being used in the app
 
     app_list = []
     for key, value in apps.items():
@@ -31,7 +47,15 @@ def get_apps_from_yaml(yml: str) -> List[App]:
 
 
 def app_to_yaml(app: App) -> str:
-    # app to dict
+    """
+    Function to convert an app to a YAML string.
+
+    Args:
+        app (App): The app.
+
+    Returns:
+        str: The YAML string.
+    """
     app_dict = {app.app_id: {
         "name": app.name,
         "primary_src": app.primary_src,
