@@ -23,6 +23,7 @@ apps from third party sources without maintaining their own repos.
 %build
 %install
 mkdir -p %{buildroot}%{python3_sitelib}/sadb
+mkdir -p %{buildroot}%{_sysconfdir}
 install -m 0755 src/* %{buildroot}%{python3_sitelib}/sadb
 install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 
