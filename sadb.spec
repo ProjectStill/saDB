@@ -18,7 +18,7 @@ When paired with stillAppMan, it can be used by distro vendors to moderate
 apps from third party sources without maintaining their own repos.
 
 %prep
-%autosetup -n %{name}-main
+%autosetup -n saDB-main
 
 %build
 %install
