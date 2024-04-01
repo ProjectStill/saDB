@@ -24,7 +24,7 @@ def cli():
 def check_sources():
     """Tests to make sure all sources are correctly configured."""
     source_yaml = util.download_yaml(
-        urljoin(CONFIG.repo_url, "../ex_config_files/sourceconf.yaml"), verbose=CONFIG.verbose
+        urljoin(CONFIG.repo_url, "sourceconf.yaml"), verbose=CONFIG.verbose
     )
     correct, error = source_man.check_sources(source_yaml)
     if not correct:
