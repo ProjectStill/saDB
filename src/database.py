@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import sqlite3
 import sadb_classes as sadb
@@ -91,7 +91,7 @@ class ReadableDB:
     def __exit__(self, type, value, traceback):
         self.conn.close()
 
-    def get_app(self, app_id: str) -> sadb.App:
+    def get_app(self, app_id: str) -> Optional[sadb.App]:
         """
         Returns the app with the given id from the database.
 
@@ -103,7 +103,9 @@ class ReadableDB:
         """
         self.c.execute("SELECT * FROM apps WHERE id=?", (app_id, ))
         app = self.c.fetchone()
-        return sadb.App(*app)
+        if app is None:
+            return None
+        return self.column_to_app(app)
 
     @staticmethod
     def column_to_app(column: tuple):
