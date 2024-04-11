@@ -1,6 +1,7 @@
 import yaml
 from typing import List
-from sadb_classes import App
+from __init__ import App
+
 
 def get_apps_from_yaml_path(path: str) -> List[App]:
     """

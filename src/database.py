@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 import sqlite3
-import sadb_classes as sadb
+import __init__ as sadb
 import utilities
 from configuration import SadbConfig
 import os.path

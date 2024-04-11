@@ -7,7 +7,7 @@ import yaml
 
 import source_man
 import yaml_parse as yp
-import sadb_classes as sadb
+import __init__ as sadb
 import database as db
 import configuration as cfg
 
