@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 import shutil
 from urllib.parse import urljoin
@@ -6,7 +7,6 @@ import unittest
 import click
 
 import sadb.database as database
-from sadb import database
 import sadb.source_man as source_man
 import sadb.yaml_parse as yaml_parse
 import sadb.configuration as cfg

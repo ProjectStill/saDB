@@ -1,5 +1,5 @@
 Name:           sadb
-Version:        0.1.2
+Version:        0.1.3
 Release:        1%{?dist}
 Summary:        A package for managing apps
 
@@ -9,6 +9,7 @@ Source0:        %{url}/archive/refs/heads/main.tar.gz
 BuildArch:      noarch
 
 Requires:  python3
+Requires:  python3-tqdm
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 
@@ -24,6 +25,8 @@ apps from third party sources without maintaining their own repos.
 %install
 mkdir -p %{buildroot}%{python3_sitelib}/sadb
 mkdir -p %{buildroot}%{_sysconfdir}
+mkdir -p %{buildroot}%{_bindir}
+install -m 0755 src/__main__.py %{buildroot}%{_bindir}/sadb
 install -m 0755 src/* %{buildroot}%{python3_sitelib}/sadb
 install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 
@@ -35,5 +38,12 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %{_sysconfdir}/sadb.conf
 
 %changelog
+* Wed Apr 10 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.3-1
+- __main__.py is now a binary for rpms (0.1.3)
+- Fixed database import in __main__.py (0.1.3)
+- Added python3-tqdm as a dependency (0.1.3)
+- Fixed imports (0.1.2)
+- Changed sadb_classes to be part of init (idk why that wasn't there in the first place) (0.1.1)
+
 * Wed Apr 1 2024 Cameron Knauff <cameron@stillhq.io> - 0.1-1
 - First release
