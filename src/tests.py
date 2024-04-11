@@ -5,11 +5,11 @@ import tempfile
 
 import yaml
 
-import source_man
-import yaml_parse as yp
-import __init__ as sadb
-import database as db
-import configuration as cfg
+import sadb
+import sadb.source_man as source_man
+import sadb.yaml_parse as yp
+import sadb.database as db
+import sadb.configuration as cfg
 
 config = cfg.SadbConfig()
 config.db_location = "test/test.db"  # change the path to prevent overwriting the real database

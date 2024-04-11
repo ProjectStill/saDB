@@ -5,12 +5,13 @@ import unittest
 
 import click
 
-import database
-import source_man
-import yaml_parse
-import configuration as cfg
-import utilities as util
-import tests
+import sadb.database as database
+from sadb import database
+import sadb.source_man as source_man
+import sadb.yaml_parse as yaml_parse
+import sadb.configuration as cfg
+import sadb.utilities as util
+import sadb.tests as tests
 
 CONFIG = cfg.SadbConfig()
 

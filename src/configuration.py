@@ -1,5 +1,5 @@
 import configparser
-import utilities
+import sadb.utilities as utilities
 import os
 
 # Path to the configuration file

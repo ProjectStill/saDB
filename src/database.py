@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 import sqlite3
-import __init__ as sadb
-import utilities
-from configuration import SadbConfig
+import sadb
+import sadb.utilities as utilities
+from sadb.configuration import SadbConfig
 import os.path
 from urllib.parse import urlparse, urlunparse
 

@@ -1,6 +1,6 @@
 import yaml
 from typing import List
-from __init__ import App
+from sadb import App
 
 
 def get_apps_from_yaml_path(path: str) -> List[App]:
