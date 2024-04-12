@@ -49,5 +49,5 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 - Fixed imports (0.1.2)
 - Changed sadb_classes to be part of init (idk why that wasn't there in the first place) (0.1.1)
 
-* Wed Apr 1 2024 Cameron Knauff <cameron@stillhq.io> - 0.1-1
+* Mon Apr 1 2024 Cameron Knauff <cameron@stillhq.io> - 0.1-1
 - First release
