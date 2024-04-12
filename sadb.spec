@@ -36,6 +36,7 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %dir %{python3_sitelib}/sadb
 %{python3_sitelib}/sadb/*
 %{_sysconfdir}/sadb.conf
+%{_bindir}/sadb
 
 %changelog
 * Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.4-1
