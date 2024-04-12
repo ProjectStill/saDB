@@ -20,7 +20,7 @@ test_app = sadb.App(
     """When it comes to your life online, you have a choice: accept the factory settings or put your privacy first. When you choose Firefox as your default browser, you’re choosing to protect your data while supporting an independent tech company. Firefox is also the only major browser backed by a non-profit fighting to give you more openness, transparency and control of your life online. Join hundreds of millions of people who choose to protect what's important by choosing Firefox - a web browser designed to be fast, easy to use, customizable and private.""",
     ["Network", "WebBrowser"], ["browser", "app"],
     ['text/html', 'text/xml', 'application/xhtml+xml', 'application/vnd.mozilla.xul+xml', 'text/mml', 'x-scheme-handler/http', 'x-scheme-handler/https'],
-    "MPL-2.0", sadb.Pricing.FREE, sadb.MobileType.PC_ONLY, sadb.StillRating.FIVE,
+    "MPL-2.0", sadb.Pricing.FREE, sadb.MobileType.PC_ONLY, sadb.StillRating.GOLD,
     "This is a test app","https://www.mozilla.org/en-US/firefox/","https://foundation.mozilla.org/en/?form=donate-header",
     [
         "https://dl.flathub.org/repo/screenshots/org.mozilla.firefox-stable/1248x702/org.mozilla.firefox-af5d1ae7c121ea4864b3c5a1098f8f9c.png",
