@@ -38,6 +38,9 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %{_sysconfdir}/sadb.conf
 
 %changelog
+* Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.4-1
+- Changed stillRating system to Bronze, Silver, Gold, Gold+ instead of out of 5.
+
 * Wed Apr 10 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.3-1
 - __main__.py is now a binary for rpms (0.1.3)
 - Fixed database import in __main__.py (0.1.3)

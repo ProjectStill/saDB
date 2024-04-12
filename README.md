@@ -33,5 +33,6 @@ Replace `<command>` with any of the commands listed above.
 You can run the tests using the `run_tests` command:
 
 ## TODO:
+- [ ] Add Tags for stillCenter
 - [ ] Allow managing per user sources
 - [ ] Snap support

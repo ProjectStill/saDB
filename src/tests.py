@@ -14,13 +14,20 @@ import sadb.configuration as cfg
 config = cfg.SadbConfig()
 config.db_location = "test/test.db"  # change the path to prevent overwriting the real database
 test_app = sadb.App(
-    "test-app", "Test App", "flathub", "test-app",
-    "https://example.com/icon.png","John Doe", "A test app",
-    "This is a test app", ["Test", "App"], ["test", "app"],["test/app"],
-    "MIT", sadb.Pricing.FREE, sadb.MobileType.UNKNOWN, sadb.StillRating.UNKNOWN,
-    "This is a test app","https://example.com","https://example.com/donate",
-    ["https://example.com/screenshot1.png", "https://example.com/screenshot2.png"],
-    "https://example.com/demo", ["addon1", "addon2"]
+    "firefox", "Firefox", "flathub", "org.mozilla.firefox",
+    "https://dl.flathub.org/repo/appstream/x86_64/icons/128x128/org.mozilla.firefox.png","Mozilla",
+    "Fast, Private & Safe Web Browser",
+    """When it comes to your life online, you have a choice: accept the factory settings or put your privacy first. When you choose Firefox as your default browser, you’re choosing to protect your data while supporting an independent tech company. Firefox is also the only major browser backed by a non-profit fighting to give you more openness, transparency and control of your life online. Join hundreds of millions of people who choose to protect what's important by choosing Firefox - a web browser designed to be fast, easy to use, customizable and private.""",
+    ["Network", "WebBrowser"], ["browser", "app"],
+    ['text/html', 'text/xml', 'application/xhtml+xml', 'application/vnd.mozilla.xul+xml', 'text/mml', 'x-scheme-handler/http', 'x-scheme-handler/https'],
+    "MPL-2.0", sadb.Pricing.FREE, sadb.MobileType.PC_ONLY, sadb.StillRating.FIVE,
+    "This is a test app","https://www.mozilla.org/en-US/firefox/","https://foundation.mozilla.org/en/?form=donate-header",
+    [
+        "https://dl.flathub.org/repo/screenshots/org.mozilla.firefox-stable/1248x702/org.mozilla.firefox-af5d1ae7c121ea4864b3c5a1098f8f9c.png",
+        "https://dl.flathub.org/repo/screenshots/org.mozilla.firefox-stable/1248x702/org.mozilla.firefox-c6f98b38b8b28b113a75a6b34037b759.png",
+        "https://dl.flathub.org/repo/screenshots/org.mozilla.firefox-stable/1248x702/org.mozilla.firefox-60e855c1f4180607e40c9762a0fb9fa6.png"
+    ],
+    "", []
 )
 
 
