@@ -1,5 +1,5 @@
 Name:           sadb
-Version:        0.1.4
+Version:        0.1.5
 Release:        1%{?dist}
 Summary:        A package for managing apps
 
@@ -39,8 +39,9 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %{_bindir}/sadb
 
 %changelog
-* Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.4-1
-- Changed stillRating system to Bronze, Silver, Gold, Gold+ instead of out of 5.
+* Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.5-1
+- Added CAUTION stillRating (0.1.5)
+- Changed stillRating system to Bronze, Silver, Gold, Gold+ instead of out of 5. (0.1.4)
 
 * Wed Apr 10 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.3-1
 - __main__.py is now a binary for rpms (0.1.3)

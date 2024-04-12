@@ -56,10 +56,11 @@ class StillRating(Enum):
         FIVE_PLUS (int): Still rating of 5+.
     """
     UNKNOWN = 0
-    BRONZE = 1
-    SILVER = 2
-    GOLD = 3
-    GOLD_PLUS = 4
+    CAUTION = 1
+    BRONZE = 2
+    SILVER = 3
+    GOLD = 4
+    GOLD_PLUS = 5
 
 
 def from_csl(csl: Optional[str]):
