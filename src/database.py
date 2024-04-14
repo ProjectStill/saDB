@@ -14,7 +14,6 @@ PATH = os.path.join(os.path.dirname(__file__), 'sadb.db')
 tcsl = sadb.to_csl
 fcsl = sadb.from_csl
 
-
 # Function to check if the database is in the correct format
 def is_valid_sqlite_db() -> bool:
     """
@@ -259,3 +258,7 @@ class WritableDB(ReadableDB):
         """
         self.c.execute("DELETE FROM apps")
         #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSUCCESSFUL
+
+
+def get_readable_db() -> ReadableDB:
+    return ReadableDB(SadbConfig())

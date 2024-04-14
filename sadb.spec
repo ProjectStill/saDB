@@ -1,5 +1,5 @@
 Name:           sadb
-Version:        0.1.5
+Version:        0.1.6
 Release:        1%{?dist}
 Summary:        A package for managing apps
 
@@ -39,6 +39,9 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %{_bindir}/sadb
 
 %changelog
+* Sun Apr 14 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.6-1
+- Added a convienence function to get a readonly db.
+
 * Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.5-1
 - Added CAUTION stillRating (0.1.5)
 - Changed stillRating system to Bronze, Silver, Gold, Gold+ instead of out of 5. (0.1.4)
