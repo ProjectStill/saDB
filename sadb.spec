@@ -1,6 +1,6 @@
 Name:           sadb
 Version:        0.1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A package for managing apps
 
 License:        GPL v3
@@ -10,6 +10,7 @@ BuildArch:      noarch
 
 Requires:  python3
 Requires:  python3-tqdm
+Requires:  python3-click
 BuildRequires:  python3-devel
 BuildRequires:  python3-setuptools
 

@@ -15,6 +15,7 @@ import sadb.tests as tests
 
 CONFIG = cfg.SadbConfig()
 
+
 # Commandline Interface
 @click.group()  # click group to allow subcommands
 def cli():
@@ -45,7 +46,7 @@ def update_source():
 
     if CONFIG.verbose:
         print("Downloading source data (1/2):")
-    source_yaml = util.download_yaml(urljoin(CONFIG.repo_url, "../ex_config_files/sourceconf.yaml"), verbose=CONFIG.verbose)
+    source_yaml = util.download_yaml(urljoin(CONFIG.repo_url, "sourceconf.yaml"), verbose=CONFIG.verbose)
     if CONFIG.verbose:
         print("\nGenerating sources (2/2)")
     source_man.generate_sources(source_yaml)
@@ -55,8 +56,10 @@ def update_source():
 @click.command()
 def update_db(start_step: int = 0):
     """Updates the database with the latest yaml data."""
-    print(f"\nDownloading yaml database ({start_step + 1}/{start_step + 2}]):")
+    if CONFIG.verbose:
+        print(f"\nDownloading yaml database ({start_step + 1}/{start_step + 2}):")
     db_yaml = util.download_yaml(urljoin(CONFIG.repo_url, "repo.yaml"), verbose=CONFIG.verbose)
+    print(db_yaml)
     # Add apps to database
     if CONFIG.verbose:
         print(f"\n(Re)generating database ({start_step + 2}/{start_step + 2})")
@@ -68,9 +71,11 @@ def update_db(start_step: int = 0):
 @click.command()
 def update():
     """Runs both update_source and update_db. (Requires root)"""
+    if os.geteuid() != 0:
+        print("This command must be run as root.")
+        exit(1)
     update_source()
     update_db(start_step=2)
-    exit(0)
 
 
 @click.command()
@@ -96,4 +101,5 @@ cli.add_command(run_tests)
 
 
 if __name__ == "__main__":
+    CONFIG.verbose = True
     cli()

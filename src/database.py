@@ -7,15 +7,12 @@ from sadb.configuration import SadbConfig
 import os.path
 from urllib.parse import urlparse, urlunparse
 
-# Path to the SQLite database
-PATH = os.path.join(os.path.dirname(__file__), 'sadb.db')
-
 # Shortened alias functions
 tcsl = sadb.to_csl
 fcsl = sadb.from_csl
 
 # Function to check if the database is in the correct format
-def is_valid_sqlite_db() -> bool:
+def is_valid_sqlite_db(path) -> bool:
     """
     Checks if the SQLite database at the specified path is valid.
 
@@ -25,7 +22,7 @@ def is_valid_sqlite_db() -> bool:
     out = True
     conn = None
     try:
-        conn = sqlite3.connect(PATH)
+        conn = sqlite3.connect(path)
         cursor = conn.cursor()
         cursor.execute("SELECT 1")
         conn.close()

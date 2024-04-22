@@ -61,13 +61,10 @@ class TestDatabase(unittest.TestCase):
         self.assertEqual(self.read_db.get_all_apps(), [])
 
     def test_create_db(self):
-        if os.path.isfile(db.PATH):
-            os.remove(db.PATH)
+        if os.path.isfile(config.db_location):
+            os.remove(config.db_location)
         self.write_db.create_db()
-        self.assertTrue(db.is_valid_sqlite_db())
-
-    def test_database_exists(self): # test if the database file exists
-        self.assertTrue(os.path.exists(db.PATH))
+        self.assertTrue(db.is_valid_sqlite_db(config.db_location))
 
     def test_add_app_and_get_app(self):
         self.write_db.clear_db()
