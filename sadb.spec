@@ -24,17 +24,20 @@ apps from third party sources without maintaining their own repos.
 
 %build
 %install
-mkdir -p %{buildroot}%{python3_sitelib}/sadb
+mkdir -p %{buildroot}%{python3_sitelib}/sadb/source
 mkdir -p %{buildroot}%{_sysconfdir}
 mkdir -p %{buildroot}%{_bindir}
 install -m 0755 src/__main__.py %{buildroot}%{_bindir}/sadb
-install -m 0755 src/* %{buildroot}%{python3_sitelib}/sadb
+install -m 0755 src/*.py %{buildroot}%{python3_sitelib}/sadb
+install -m 0755 src/source/*.py %{buildroot}%{python3_sitelib}/sadb/source
 install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 
 %files
 %doc README.md
 %license LICENSE
 %dir %{python3_sitelib}/sadb
+%dir %{python3_sitelib}/sadb/source
+%{python3_sitelib}/sadb/source/*
 %{python3_sitelib}/sadb/*
 %{_sysconfdir}/sadb.conf
 %{_bindir}/sadb
@@ -45,14 +48,14 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 - Added installed database
 
 * Sun Apr 14 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.6-1
-- Added a convienence function to get a readonly db.
+- Added a convenience function to get a readonly db.
 
 * Fri Apr 12 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.5-1
 - Added CAUTION stillRating (0.1.5)
 - Changed stillRating system to Bronze, Silver, Gold, Gold+ instead of out of 5. (0.1.4)
 
 * Wed Apr 10 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.3-1
-- __main__.py is now a binary for rpms (0.1.3)
+- __main__.py is now a binary for RPM (0.1.3)
 - Fixed database import in __main__.py (0.1.3)
 - Added python3-tqdm as a dependency (0.1.3)
 - Fixed imports (0.1.2)

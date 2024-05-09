@@ -1,5 +1,6 @@
 import gzip
 import io
+import os
 from typing import Optional, List
 import configparser
 import yaml
@@ -170,9 +171,16 @@ class FlatpakType(SourceType):
                     )
                     continue
 
-                icon = app_component.get_icon_by_size(64, 64)
-                if icon:
-                    icon = icon.get_filename()  # Should be local since app is already installed
+                icon_path = os.path.join(
+                    flatpak_installation.get_path().get_path(), "app", package.split("/")[1], "current", "active",
+                    "files", "share", "app-info", "icons", "flatpak", "64x64"
+                )
+                if os.path.exists(os.path.join(icon_path, f"{package.split("/")[1]}.png")):
+                    icon = os.path.join(icon_path, f"{package.split("/")[1]}.png")  # Should be local since app is already installed
+                elif os.path.exists(os.path.join(icon_path, f"{package.split("/")[1]}.desktop.png")):
+                    icon = os.path.join(icon_path, f"{package.split("/")[1]}.desktop.png")
+                else:
+                    icon = None
                 mimetypes = app_component.get_provided_for_kind(AppStream.ProvidedKind.MEDIATYPE)
 
                 if mimetypes is None:
