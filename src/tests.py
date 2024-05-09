@@ -6,7 +6,7 @@ import tempfile
 import yaml
 
 import sadb
-import sadb.source_man as source_man
+import sadb.source.manager as source_man
 import sadb.yaml_parse as yp
 import sadb.database as db
 import sadb.configuration as cfg

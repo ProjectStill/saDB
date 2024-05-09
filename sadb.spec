@@ -1,5 +1,5 @@
 Name:           sadb
-Version:        0.1.6
+Version:        0.2.0
 Release:        2%{?dist}
 Summary:        A package for managing apps
 
@@ -40,6 +40,10 @@ install -m 0755 ex_config_files/sadb.conf %{buildroot}%{_sysconfdir}/sadb.conf
 %{_bindir}/sadb
 
 %changelog
+* Wed May 08 2024 Cameron Knauff <cameron@stillhq.io> - 0.2.0-1
+- Seperated source module
+- Added installed database
+
 * Sun Apr 14 2024 Cameron Knauff <cameron@stillhq.io> - 0.1.6-1
 - Added a convienence function to get a readonly db.
 

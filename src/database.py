@@ -103,6 +103,22 @@ class ReadableDB:
             return None
         return self.column_to_app(app)
 
+    def get_installed_app_from_main_db(self, source: str, package: str) -> Optional[sadb.App]:
+        """
+        Returns the app with the given id from the database.
+
+        Parameters:
+            app_id (str): The id of the app.
+
+        Returns:
+            sadb.App: The app with the given id.
+        """
+        self.c.execute("SELECT * FROM apps WHERE primary_src=? AND src_pkg_name=?", (source, package))
+        app = self.c.fetchone()
+        if app is None:
+            return None
+        return self.column_to_app(sadb.InstalledApp.from_app(app))
+
     @staticmethod
     def column_to_app(column: tuple):
         """
@@ -203,6 +219,12 @@ class WritableDB(ReadableDB):
             mimetypes text, license text, pricing int, mobile int, still_rating int, 
             still_rating_notes text, homepage text, donate_url text, screenshot_urls text, 
             demo_url text, addons text)''')
+        self.c.execute('''CREATE TABLE IF NOT EXISTS installed
+            (id text, name text, primary_src text, src_pkg_name text, icon_url text, 
+            author text, summary text, description text, categories text, keywords text, 
+            mimetypes text, license text, pricing int, mobile int, still_rating int, 
+            still_rating_notes text, homepage text, donate_url text, screenshot_urls text, 
+            demo_url text, addons text, update_available int)''')
 
     def add_app(self, app: sadb.App) -> None:
         """
@@ -255,6 +277,60 @@ class WritableDB(ReadableDB):
         """
         self.c.execute("DELETE FROM apps")
         #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSUCCESSFUL
+
+    def clear_installed_apps(self) -> None:
+        """
+        Clears the installed app daatbaase
+        """
+        self.c.execute("DELETE FROM installed")
+        #  self.conn.commit()  REMOVE COMMIT INCASE FUTURE OPERATION IS UNSUCCESSFUL
+
+    def add_installed_app(self, app: sadb.InstalledApp):
+        """
+        Add app to the installed database
+        """
+        """
+        Adds the given list of apps to the database.
+
+        Parameters:
+            apps (list): The list of apps to add.
+        """
+        # Prevent apps with the same package name
+        self.c.execute("SELECT * FROM installed WHERE src_pkg_name=?", (app.src_pkg_name,))
+        if self.c.fetchone() is not None:
+            raise ValueError(f"An app with src_pkg_name {app.src_pkg_name} already exists.")
+        self.c.execute("INSERT OR REPLACE INTO installed VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
+                app.author, app.summary, app.description, tcsl(app.categories),
+                tcsl(app.keywords), tcsl(app.mimetypes), app.app_license, app.pricing.value,
+                app.mobile.value, app.still_rating.value, app.still_rating_notes, app.homepage,
+                app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons), app.update_available
+            )
+        )
+        self.conn.commit()
+
+    def add_installed_apps(self, apps: List[sadb.InstalledApp]):
+        """
+        Add app to the installed database.
+
+        Parameters:
+            app (sadb.InstalledApp): The app to add.
+        """
+        self.c.execute("SELECT src_pkg_name FROM installed")
+        existing_pkgs = [row[3] for row in self.c.fetchall()]
+        apps = remove_duplicate_apps(apps)
+        apps_data = [
+            (
+                app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url,
+                app.author, app.summary, app.description, tcsl(app.categories),
+                tcsl(app.keywords), tcsl(app.mimetypes), app.app_license, app.pricing.value,
+                app.mobile.value, app.still_rating.value, app.still_rating_notes, app.homepage,
+                app.donate_url, tcsl(app.screenshot_urls), app.demo_url, tcsl(app.addons), app.update_available
+            ) for app in apps if app.src_pkg_name not in existing_pkgs
+        ]
+        self.c.executemany("INSERT OR REPLACE INTO installed VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", apps_data)
+        self.conn.commit()
 
 
 def get_readable_db() -> ReadableDB:

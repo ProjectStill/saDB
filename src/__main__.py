@@ -7,7 +7,7 @@ import unittest
 import click
 
 import sadb.database as database
-import sadb.source_man as source_man
+import sadb.source.manager as source_man
 import sadb.yaml_parse as yaml_parse
 import sadb.configuration as cfg
 import sadb.utilities as util
@@ -76,12 +76,22 @@ def update():
         exit(1)
     update_source()
     update_db(start_step=2)
+    update_installed()
 
 
 @click.command()
 def get_db_location():
     """Outputs the location of the database."""
     print(CONFIG.db_location)
+
+
+@click.command()
+def update_installed():
+    """Updates the installed apps database."""
+    with database.WritableDB(CONFIG) as db:
+        db.clear_installed_apps()
+        for source in source_man.sources.values():
+            source.add_installed_to_db(db)
 
 
 @click.command(hidden=True)
@@ -96,6 +106,7 @@ cli.add_command(check_sources)
 cli.add_command(update_source)
 cli.add_command(update_db)
 cli.add_command(update)
+cli.add_command(update_installed)
 cli.add_command(get_db_location)
 cli.add_command(run_tests)
 

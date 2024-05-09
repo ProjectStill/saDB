@@ -237,3 +237,41 @@ class App:
 
         if addons is not None:
             self.addons = addons
+
+
+class InstalledApp(App):
+    update_available: bool = False
+
+    def __init__(
+        self, update_available: bool,
+        app_id: str, name: str, primary_src: str, src_pkg_name: str,
+        icon_url: str, author: str, summary: str, description: str,
+        categories: List[str], keywords: Optional[List[str]],
+        mimetypes: Optional[List[str]], app_license: Optional[str], pricing: Optional[Pricing],
+        mobile: Optional[MobileType], still_rating: Optional[StillRating], still_rating_notes: Optional[str],
+        homepage: Optional[str], donate_url: Optional[str], screenshot_urls: Optional[List[str]],
+        demo_url: Optional[str], addons: Optional[List[str]]
+    ):
+        super().__init__(
+            app_id, name, primary_src, src_pkg_name, icon_url, author, summary, description, categories, keywords,
+            mimetypes, app_license, pricing, mobile, still_rating, still_rating_notes, homepage, donate_url,
+            screenshot_urls, demo_url, addons
+        )
+        self.update_available = update_available
+
+    @classmethod
+    def from_app(cls, app: App):
+        return cls(
+            False, app.app_id, app.name, app.primary_src, app.src_pkg_name, app.icon_url, app.author,
+            app.summary, app.description, app.categories, app.keywords, app.mimetypes, app.app_license,
+            app.pricing, app.mobile, app.still_rating, app.still_rating_notes, app.homepage, app.donate_url,
+            app.screenshot_urls, app.demo_url, app.addons
+        )
+
+    # app_id: str, name: str, primary_src: str, src_pkg_name: str,
+    #             icon_url: str, author: str, summary: str, description: str,
+    #             categories: List[str], keywords: Optional[List[str]],
+    #             mimetypes: Optional[List[str]], app_license: Optional[str], pricing: Optional[Pricing],
+    #             mobile: Optional[MobileType], still_rating: Optional[StillRating], still_rating_notes: Optional[str],
+    #             homepage: Optional[str], donate_url: Optional[str], screenshot_urls: Optional[List[str]],
+    #             demo_url: Optional[str], addons: Optional[List[str]]
