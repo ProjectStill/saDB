@@ -117,7 +117,21 @@ class ReadableDB:
         app = self.c.fetchone()
         if app is None:
             return None
-        return self.column_to_app(sadb.InstalledApp.from_app(app))
+        return sadb.InstalledApp.from_app(self.column_to_app(app))
+
+    def get_installed_apps(self) -> List[sadb.InstalledApp]:
+        """
+        Returns:
+            List[sadb.InstalledApp]: A list of installed apps from the database.
+        """
+        self.c.execute("SELECT * FROM installed")
+        apps = []
+        apps_columns = self.c.fetchall()
+
+        for app in apps_columns:
+            apps.append(self.column_to_installed_app(app))
+        return apps
+
 
     @staticmethod
     def column_to_app(column: tuple):
@@ -133,6 +147,26 @@ class ReadableDB:
         assert len(column) == 21
         return sadb.App(
             column[0], column[1], column[2], column[3], column[4], column[5],
+            column[6], column[7], fcsl(column[8]), fcsl(column[9]), fcsl(column[10]),
+            column[11], sadb.Pricing(column[12]), sadb.MobileType((column[13])),
+            sadb.StillRating(column[14]), column[15], column[16], column[17], fcsl(column[18]),
+            column[19], fcsl(column[20])
+        )
+
+    @staticmethod
+    def column_to_installed_app(column: tuple):
+        """
+        Converts a SQL query result to an InstalledApp class instance.
+
+        Parameters:
+            column (tuple): The SQL query result.
+
+        Returns:
+            sadb.App: The App class instance.
+        """
+        assert len(column) == 22
+        return sadb.InstalledApp(
+            column[21], column[0], column[1], column[2], column[3], column[4], column[5],
             column[6], column[7], fcsl(column[8]), fcsl(column[9]), fcsl(column[10]),
             column[11], sadb.Pricing(column[12]), sadb.MobileType((column[13])),
             sadb.StillRating(column[14]), column[15], column[16], column[17], fcsl(column[18]),
