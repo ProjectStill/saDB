@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 import shutil
+from typing import List
 from urllib.parse import urljoin
 import unittest
 
@@ -14,7 +15,6 @@ import sadb.utilities as util
 import sadb.tests as tests
 
 CONFIG = cfg.SadbConfig()
-
 
 # Commandline Interface
 @click.group()  # click group to allow subcommands

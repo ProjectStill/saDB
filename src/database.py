@@ -132,6 +132,19 @@ class ReadableDB:
             apps.append(self.column_to_installed_app(app))
         return apps
 
+    def get_app_updates(self) -> List[sadb.InstalledApp]:
+        """
+        Returns:
+            List[sadb.InstalledApp]: A list of installed apps from the database.
+        """
+        self.c.execute("SELECT * FROM installed WHERE update_available = 1")
+        apps = []
+        apps_columns = self.c.fetchall()
+
+        for app in apps_columns:
+            apps.append(self.column_to_installed_app(app))
+        return apps
+
 
     @staticmethod
     def column_to_app(column: tuple):

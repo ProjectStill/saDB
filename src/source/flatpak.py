@@ -142,15 +142,18 @@ class FlatpakType(SourceType):
         apps = []
         flatpak_installation = Flatpak.Installation.new_system()
         refs = flatpak_installation.list_installed_refs()
+        updates_available = [ref.format_ref() for ref in flatpak_installation.list_installed_refs_for_update(None)]
 
         for ref in refs:
             origin = ref.get_origin()
             package = ref.format_ref()
+            update_available = package in updates_available
 
             if package.split("/")[0] != "app":
                 continue
 
             app = db.get_installed_app_from_main_db(origin, package)
+
             if app is None:
                 try:
                     appstream_gz = ref.load_appdata(None).get_data()
@@ -163,7 +166,7 @@ class FlatpakType(SourceType):
 
                 if app_component is None:
                     app = InstalledApp(
-                        False, f"{origin}-{package.split("/")[1].replace(".", "-")}",
+                        update_available, f"{origin}-{package.split("/")[1].replace(".", "-")}",
                         ref.get_name(), origin, package, "", "Unknown Author", ref.get_name(),
                         "This is an unknown app", ["Unknown"], None, None, None,
                         None, None, None, None, None, None, None,
@@ -189,14 +192,14 @@ class FlatpakType(SourceType):
                     mimetypes = mimetypes.get_items()
 
                 app = InstalledApp(
-                    False, f"{origin}-{package.split("/")[1].replace(".", "-")}",
+                    update_available, f"{origin}-{package.split("/")[1].replace(".", "-")}",
                     app_component.get_name(), origin, package, icon, app_component.get_developer().get_name(),
                     app_component.get_summary(), app_component.get_description(), app_component.get_categories(),
                     app_component.get_keywords(), mimetypes, None, None, None, None,
                     None, None, None, None, None, None
                 )
-
-            app.update_available = not ref.get_is_current()
+            else:
+                app.update_available = update_available
             apps.append(app)
         return apps
 
