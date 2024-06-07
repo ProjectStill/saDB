@@ -11,6 +11,7 @@ from urllib.parse import urlparse, urlunparse
 tcsl = sadb.to_csl
 fcsl = sadb.from_csl
 
+
 # Function to check if the database is in the correct format
 def is_valid_sqlite_db(path) -> bool:
     """
@@ -131,6 +132,13 @@ class ReadableDB:
         for app in apps_columns:
             apps.append(self.column_to_installed_app(app))
         return apps
+
+    def get_installed_app(self, source, package) -> sadb.App:
+        self.c.execute("SELECT * FROM installed WHERE primary_src=? AND src_pkg_name=?", (source, package))
+        app = self.c.fetchone()
+        if app is None:
+            return None
+        return sadb.InstalledApp.from_app(self.column_to_app(app))
 
     def get_app_updates(self) -> List[sadb.InstalledApp]:
         """

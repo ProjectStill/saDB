@@ -1,6 +1,6 @@
 Name:           sadb
-Version:        0.2.0
-Release:        3%{?dist}
+Version:        0.2.1
+Release:        4%{?dist}
 Summary:        A package for managing apps
 
 License:        GPL v3
