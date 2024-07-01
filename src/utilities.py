@@ -3,6 +3,7 @@ from tqdm import tqdm
 import os
 import pwd
 
+
 def get_current_user():
     """
     Function to get the current user.
