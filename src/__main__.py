@@ -59,7 +59,6 @@ def update_db(start_step: int = 0):
     if CONFIG.verbose:
         print(f"\nDownloading yaml database ({start_step + 1}/{start_step + 2}):")
     db_yaml = util.download_yaml(urljoin(CONFIG.repo_url, "repo.yaml"), verbose=CONFIG.verbose)
-    print(db_yaml)
     # Add apps to database
     if CONFIG.verbose:
         print(f"\n(Re)generating database ({start_step + 2}/{start_step + 2})")

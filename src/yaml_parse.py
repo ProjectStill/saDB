@@ -1,6 +1,6 @@
 import yaml
 from typing import List
-from sadb import App
+from sadb import App, Pricing, MobileType, StillRating
 
 
 def get_apps_from_yaml_path(path: str) -> List[App]:
@@ -37,14 +37,20 @@ def get_apps_from_yaml(yml: str) -> List[App]:
             value.get("author", None), value.get("summary", None),
             value.get("description", None), value.get("categories", None),
             value.get("keywords", None), value.get("mimetypes", None),
-            value.get("license", None), value.get("pricing", None),
-            value.get("mobile", None), value.get("still_rating", None),
+            value.get("license", None), enum_getter(Pricing, value.get("pricing", None)),
+            enum_getter(MobileType, value.get("mobile", None)), enum_getter(StillRating, value.get("still_rating", None)),
             value.get("still_rating_notes", None), value.get("homepage", None),
             value.get("donate_url", None), value.get("screenshot_urls", None),
             value.get("demo_url", None), value.get("addons", None)
         )
         app_list.append(app)
     return app_list
+
+
+def enum_getter(enum, value):
+    if value is None:
+        value = 0
+    return enum(value)
 
 
 def app_to_yaml(app: App) -> str:
